@@ -1,0 +1,7 @@
+3 different implementations of the dining philosopher problem for CPSC 261 at UBC.
+
+phil.c compiles and runs but deadlocks. Note that it was an exercise for class and it was meant to deadlock. The next two files are two working versions.
+
+phil-ordered.c is an implementation where the philosophers always pick up the same forks in the same order.
+
+phil-random.c is the same except the order is randomly selected.
