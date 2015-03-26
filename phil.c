@@ -52,7 +52,7 @@ void Eat(int n) {
 
 int main() {
 	int i;
-	
+
 	// Initializes NFORKS number of Philosophers
 	for(i = 0; i < NFORKS; i++) {
 		pthread_mutex_init(&forks[i],NULL);
@@ -82,7 +82,7 @@ void Simulate(int n) {
 	// of the defined constant.
 	int x = NMEALS;
 	// Do all of this until the philosopher has eaten all their meals
-	do {	
+	do {
 		// The philosopher will stay in this function until they are able to grab
 		// their left fork
 		LockLeftFork(n);

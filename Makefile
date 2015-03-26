@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -g
 
-all:	phil phil-ordered phil-random 
+all:	phil phil-ordered phil-random
 
 phil:	phil.c
 	$(CC) $(CFLAGS) -o phil phil.c -lpthread

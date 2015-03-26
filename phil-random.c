@@ -83,7 +83,7 @@ void Simulate(int n)
 	int y;
 	// Flag to tell if the philosopher picked up the fork or not.
 	bool failed = true;
-	do {	
+	do {
 		do {
 			do {
 				// give y a random value 0, or 1 to pick up the left or right fork

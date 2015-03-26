@@ -105,7 +105,7 @@ void Simulate(int n)
 				failed = false;
 			}
 		}while(failed);
-		
+
 		//Reinitialize
 		failed = true;
 		if(VERBOSE) {
