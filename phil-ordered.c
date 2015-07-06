@@ -24,123 +24,122 @@ pthread_mutex_t forks[NFORKS];
 
 // Naps for a random length of time between 0 and NAPTIME useconds
 void Nap() {
-	usleep(random() % NAPTIME);
+  usleep(random() % NAPTIME);
 }
 
 // try to Lock the lowest index fork for philosopher n
 int LockLowestFork(int n) {
-	if( n < ((n+1)%5) ) {
-		return pthread_mutex_trylock(&forks[n]);
-	}
-	else if( n > ((n+1)%5) ) {
-		return pthread_mutex_trylock(&forks[(n+1)%5]);
-	}
-	else {
-		if(VERBOSE) {
-			printf("error");
-		}
-	}
-	return -1;
+  if ( n < ((n+1)%5) ) {
+    return pthread_mutex_trylock(&forks[n]);
+  }
+  else if ( n > ((n+1)%5) ) {
+    return pthread_mutex_trylock(&forks[(n+1)%5]);
+  }
+  else {
+    if (VERBOSE) {
+      printf("error");
+    }
+  }
+  return -1;
 }
 
 // Try to lock the highest index fork for philosopher n
 int LockHigherFork(int n) {
-	if( n > ((n+1)%5) ) {
-		return pthread_mutex_trylock(&forks[n]);
-	}
-	else if( n < ((n+1)%5) ) {
-		return pthread_mutex_trylock(&forks[(n+1)%5]);
-	}
-	else {
-		if(VERBOSE) {
-			printf("error");
-		}
-	}
-	return -1;
+  if ( n > ((n+1)%5) ) {
+    return pthread_mutex_trylock(&forks[n]);
+  }
+  else if ( n < ((n+1)%5) ) {
+    return pthread_mutex_trylock(&forks[(n+1)%5]);
+  }
+  else {
+    if (VERBOSE) {
+      printf("error");
+    }
+  }
+  return -1;
 }
 
 // drop the forks when done eating
 void Eat(int n) {
-	pthread_mutex_unlock(&forks[n]);
-	pthread_mutex_unlock(&forks[(n+1)%5]);
+  pthread_mutex_unlock(&forks[n]);
+  pthread_mutex_unlock(&forks[(n+1)%5]);
 }
 
 int main() {
-	int i;
+  int i;
 
-	// Initialize the philosopher threads
-	for(i = 0; i < NFORKS; i++) {
-		pthread_mutex_init(&forks[i],NULL);
-	}
-	// Create the philosopher threads
-	for(i = 0; i < NPHILOSOPHERS; i++) {
-		pthread_create(&philosopher[i], NULL, (void *) Simulate,(int *) i);
-	}
-	// Do not exit program until all threads are finished.
-	for( i = 0; i < NPHILOSOPHERS; i++) {
-		pthread_join(philosopher[i], NULL);
-	}
-	for(i = 0; i < NFORKS; i++) {
-		pthread_mutex_destroy(&forks[i]);
-	}
+  // Initialize the philosopher threads
+  for (i = 0; i < NFORKS; i++) {
+    pthread_mutex_init(&forks[i],NULL);
+  }
+  // Create the philosopher threads
+  for (i = 0; i < NPHILOSOPHERS; i++) {
+    pthread_create(&philosopher[i], NULL, (void *) Simulate,(int *) i);
+  }
+  // Do not exit program until all threads are finished.
+  for ( i = 0; i < NPHILOSOPHERS; i++) {
+    pthread_join(philosopher[i], NULL);
+  }
+  for (i = 0; i < NFORKS; i++) {
+    pthread_mutex_destroy(&forks[i]);
+  }
 
-	printf("\n\nAll Philosophers are Finished Eating %d meals\n\n", NMEALS);
+  printf("\n\nAll Philosophers are Finished Eating %d meals\n\n", NMEALS);
 
-	return 0;
+  return 0;
 }
 
-void Simulate(int n)
-{
-	int x = NMEALS;
-	// Flag that determines if the philosopher needs to try to get a fork again
-	bool failed = true;
-	do {
-		do {
-			// if the philosopher failed to get the fork, nap and try again
-			// otherwise, continue (failed is now false, so exit loop)
-			if(LockLowestFork(n) != 0) {
-				Nap();
-			}
-			else {
-				failed = false;
-			}
-		}while(failed);
+void Simulate(int n) {
+  int x = NMEALS;
+  // Flag that determines if the philosopher needs to try to get a fork again
+  bool failed = true;
+  do {
+    do {
+      // if the philosopher failed to get the fork, nap and try again
+      // otherwise, continue (failed is now false, so exit loop)
+      if (LockLowestFork(n) != 0) {
+        Nap();
+      }
+      else {
+        failed = false;
+      }
+    } while (failed);
 
-		//Reinitialize
-		failed = true;
-		if(VERBOSE) {
-			printf("Philosopher %d got first fork\nPhilosopher %d is napping\n",n ,n);
-		}
-		Nap();
-		do{
-			// If the philosopher failed to get the second fork, nap and try again.
-			// Otherwise continue.
-			if(LockHigherFork(n) != 0) {
-				Nap();
-			}
-			else {
-				failed = false;
-			}
-		}while(failed);
+    //Reinitialize
+    failed = true;
+    if (VERBOSE) {
+      printf("Philosopher %d got first fork\nPhilosopher %d is napping\n",n ,n);
+    }
+    Nap();
+    do {
+      // If the philosopher failed to get the second fork, nap and try again.
+      // Otherwise continue.
+      if (LockHigherFork(n) != 0) {
+        Nap();
+      }
+      else {
+        failed = false;
+      }
+    } while (failed);
 
-		//reinitialize
-		failed = true;
+    //reinitialize
+    failed = true;
 
-		if(VERBOSE) {
-			printf("Philosopher %d got second fork\nPhilosopher %d is napping\n",n ,n);
-		}
-		Nap();
-		if(VERBOSE) {
-			printf("Philosopher %d is eating\nPhilosopher %d is napping\n",n,n);
-		}
-		Nap();
-		if(VERBOSE) {
-			printf("Philosopher %d put both forks down, finished eating\nPhilosopher %d is napping\n",n ,n);
-		}
-		Eat(n);
-		Nap();
+    if (VERBOSE) {
+      printf("Philosopher %d got second fork\nPhilosopher %d is napping\n",n ,n);
+    }
+    Nap();
+    if (VERBOSE) {
+      printf("Philosopher %d is eating\nPhilosopher %d is napping\n",n,n);
+    }
+    Nap();
+    if (VERBOSE) {
+      printf("Philosopher %d put both forks down, finished eating\nPhilosopher %d is napping\n",n ,n);
+    }
+    Eat(n);
+    Nap();
 
-		x--;
-	}while(x > 0);
+    x--;
+  } while (x > 0);
 
 }
